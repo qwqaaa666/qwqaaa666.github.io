@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>十一的创意空间</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=ZCOOL+KuaiLe&display=swap');
+        
+        body {
+            margin: 0;
+            min-height: 200vh;
+            background: #0a0a1a;
+            font-family: 'ZCOOL KuaiLe', cursive;
+            overflow-x: hidden;
+            transition: background 1s ease;
+        }
+        
+        /* 星空背景 */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 2s ease;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 2s infinite alternate;
+        }
+        
+        @keyframes twinkle {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
+        }
+        
+        /* 主容器 */
+        .main-container {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: opacity 1.5s ease;
+        }
+        
+        /* 标题样式 */
+        .title-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .title {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 3rem;
+            text-shadow: 0 0 10px #00f3ff;
+            animation: float 3s ease-in-out infinite alternate;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.2rem;
+            animation: float 3s ease-in-out infinite alternate-reverse;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(-1deg); }
+            100% { transform: translateY(-8px) rotate(1deg); }
+        }
+        
+        /* 色块网格 */
+        .container {
+            display: grid;
+            grid-template-columns: repeat(30, 24px);
+            grid-template-rows: repeat(5, 24px);
+            gap: 10px;
+            margin: 30px 0;
+        }
+        
+        .pixel {
+            width: 24px;
+            height: 24px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: 
+                transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                box-shadow 0.3s ease,
+                background 0.8s ease;
+            cursor: pointer;
+            border-radius: 4px;
+            box-shadow: 
+                0 6px 15px rgba(0, 0, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+            z-index: 1;
+        }
+        
+        /* 3D厚度效果增强 */
+        .pixel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            transform: translateZ(-12px);
+            filter: brightness(0.6);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            box-shadow: 
+                inset 0 0 10px rgba(255, 255, 255, 0.1),
+                0 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* 点击悬浮效果 */
+        .pixel.active {
+            animation: floatUp 5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            z-index: 20;
+        }
+        
+        @keyframes floatUp {
+            0% { 
+                transform: translateY(-15px) rotateX(25deg) scale(1.2);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            }
+            50% {
+                transform: translateY(-25px) rotateX(15deg) scale(1.25);
+                box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+            }
+            100% {
+                transform: translateY(0) rotateX(0) scale(1);
+                box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+            }
+        }
+        
+        /* 拖尾效果 */
+        .trail {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: currentColor;
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translateZ(10px);
+            opacity: 0;
+            transition: 
+                opacity 0.6s ease,
+                transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+                width 0.6s ease,
+                height 0.6s ease;
+            filter: blur(5px);
+            z-index: 5;
+        }
+        
+        /* 文档区域 */
+        .document {
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            margin: 100px auto;
+            color: rgba(255, 255, 255, 0.8);
+            opacity: 0;
+            transform: translateY(50px);
+            transition: 
+                opacity 1s ease 0.3s,
+                transform 1s ease 0.3s;
+            background: rgba(10, 10, 30, 0.5);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 243, 255, 0.2);
+        }
+        
+        body.scrolled .document {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        body.scrolled .stars {
+            opacity: 1;
+        }
+        
+        /* 隐藏文案 */
+        .hidden-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.5rem;
+            color: #00f3ff;
+            text-shadow: 0 0 20px #00f3ff;
+            opacity: 0;
+            transition: opacity 1s ease;
+            z-index: 100;
+            pointer-events: none;
+            text-align: center;
+        }
+        
+        .hidden-message p {
+            margin: 0;
+            animation: pulse 3s infinite ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { 
+                transform: scale(1);
+                text-shadow: 0 0 15px #00f3ff;
+            }
+            50% {
+                transform: scale(1.1);
+                text-shadow: 0 0 30px #00f3ff, 0 0 15px #ffffff;
+            }
+            100% { 
+                transform: scale(1);
+                text-shadow: 0 0 15px #00f3ff;
+            }
+        }
+        
+        .restore-btn {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 243, 255, 0.3);
+            color: white;
+            border: 2px solid #00f3ff;
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+            font-size: 1.1rem;
+            font-family: 'ZCOOL KuaiLe', cursive;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+        
+        .restore-btn:hover {
+            background: rgba(0, 243, 255, 0.5);
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.5);
+        }
+        
+        body.faded .restore-btn {
+            opacity: 1;
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- 星空背景 -->
+    <div class="stars" id="stars"></div>
+    
+    <!-- 主界面 -->
+    <div class="main-container" id="mainContainer">
+        <div class="title-container">
+            <div class="title">十一的创意空间</div>
+            <div class="subtitle">点击探索 · 发现惊喜</div>
+        </div>
+        
+        <div class="container" id="grid"></div>
+    </div>
+    
+    <!-- 文档区域 -->
+    <div class="document" id="document">
+        <h2>创意灵感库</h2>
+        <p>这里是十一的创意空间，每一个色块都藏着无限可能。</p>
+        <p>尝试点击第20列第5行的色块，看看会触发什么有趣的创意文案！</p>
+        <p>向下滚动可以查看更多内容，背景会变成美丽的星空。</p>
+    </div>
+    
+    <!-- 隐藏文案 -->
+    <div class="hidden-message" id="hiddenMessage">
+        <p>十一的个人空间</p>
+    </div>
+    
+    <!-- 恢复按钮 -->
+    <button class="restore-btn" id="restoreBtn">恢复界面</button>
+
+    <script>
+        // 初始化元素
+        const grid = document.getElementById('grid');
+        const mainContainer = document.getElementById('mainContainer');
+        const documentSection = document.getElementById('document');
+        const starsContainer = document.getElementById('stars');
+        const hiddenMessage = document.getElementById('hiddenMessage');
+        const restoreBtn = document.getElementById('restoreBtn');
+        const body = document.body;
+        
+        // 创建星空
+        function createStars() {
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = `${Math.random() * 3 + 1}px`;
+                star.style.height = star.style.width;
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                star.style.animationDelay = `${Math.random() * 2}s`;
+                starsContainer.appendChild(star);
+            }
+        }
+        
+        createStars();
+        
+        // 滚动检测
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 50) {
+                body.classList.add('scrolled');
+            } else {
+                body.classList.remove('scrolled');
+            }
+        });
+        
+        // 恢复按钮点击事件
+        restoreBtn.addEventListener('click', function() {
+            restoreAllPixels();
+        });
+        
+        // 色块和拖尾数组
+        const pixels = [];
+        const trails = [];
+        const originalColors = [];
+        let isFaded = false;
+        let mouseX = 0;
+        let mouseY = 0;
+        
+        // 跟踪鼠标位置
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            updatePixelReactions();
+        });
+        
+        // 创建30×5网格
+        for (let y = 0; y < 5; y++) {
+            for (let x = 0; x < 30; x++) {
+                const pixel = document.createElement('div');
+                pixel.className = 'pixel';
+                
+                // 计算颜色 - 从红到蓝渐变
+                const hue = x / 30 * 240;
+                const saturation = 80 + Math.random() * 20;
+                const lightness = 50 + Math.random() * 10;
+                const color = `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+                
+                pixel.style.background = color;
+                originalColors.push(color);
+                
+                // 存储像素位置
+                pixel.dataset.x = x;
+                pixel.dataset.y = y;
+                pixel.dataset.index = y * 30 + x;
+                pixel.dataset.gridX = x;
+                pixel.dataset.gridY = y;
+                
+                // 添加拖尾元素
+                const trail = document.createElement('div');
+                trail.className = 'trail';
+                trail.style.background = color;
+                document.body.appendChild(trail);
+                trails.push(trail);
+                
+                // 点击事件
+                pixel.addEventListener('click', function() {
+                    const index = parseInt(this.dataset.index);
+                    const x = parseInt(this.dataset.x);
+                    const y = parseInt(this.dataset.y);
+                    
+                    if (!isFaded) {
+                        // 检查是否是第5行第20列的像素(索引从0开始是4,19)
+                        if (x === 19 && y === 4) {
+                            startFadeEffect();
+                            showHiddenMessage();
+                        }
+                        
+                        // 点击悬浮效果
+                        this.classList.add('active');
+                        setTimeout(() => {
+                            this.classList.remove('active');
+                        }, 5000);
+                    }
+                });
+                
+                grid.appendChild(pixel);
+                pixels.push(pixel);
+            }
+        }
+        
+        // 更新色块对鼠标的反应
+        function updatePixelReactions() {
+            pixels.forEach((pixel) => {
+                if (pixel.classList.contains('active')) return;
+                
+                const rect = pixel.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                
+                // 计算与鼠标的距离
+                const distance = Math.sqrt(
+                    Math.pow(mouseX - centerX, 2) + 
+                    Math.pow(mouseY - centerY, 2)
+                );
+                
+                // 只影响3x3范围内的色块
+                const gridX = parseInt(pixel.dataset.gridX);
+                const gridY = parseInt(pixel.dataset.gridY);
+                const targetX = Math.floor((mouseX - grid.offsetLeft) / (24 + 10));
+                const targetY = Math.floor((mouseY - grid.offsetTop) / (24 + 10));
+                
+                if (Math.abs(gridX - targetX) <= 1 && Math.abs(gridY - targetY) <= 1) {
+                    // 计算影响程度 (1 - 距离/最大距离)
+                    const maxDistance = Math.sqrt(Math.pow(24 + 10, 2) * 2);
+                    const influence = 1 - Math.min(1, distance / maxDistance);
+                    
+                    // 线性关系影响悬浮高度
+                    const liftHeight = -15 * influence;
+                    const rotateAngle = 15 * influence;
+                    const scaleAmount = 1 + 0.2 * influence;
+                    
+                    pixel.style.transform = `
+                        translateY(${liftHeight}px) 
+                        rotateX(${rotateAngle}deg) 
+                        scale(${scaleAmount})
+                    `;
+                    pixel.style.boxShadow = `
+                        0 ${6 + 14 * influence}px ${15 + 25 * influence}px 
+                        rgba(0, 0, 0, ${0.4 + 0.3 * influence})
+                    `;
+                    pixel.style.zIndex = Math.floor(10 * influence);
+                    
+                    // 拖尾效果
+                    const index = parseInt(pixel.dataset.index);
+                    trails[index].style.opacity = (0.6 * influence).toString();
+                    trails[index].style.transform = `
+                        translate(${mouseX-20}px, ${mouseY-20}px) 
+                        translateZ(10px)
+                    `;
+                    trails[index].style.width = `${20 + 20 * influence}px`;
+                    trails[index].style.height = `${20 + 20 * influence}px`;
+                    
+                    setTimeout(() => {
+                        trails[index].style.opacity = '0';
+                    }, 300);
+                } else {
+                    // 超出3x3范围的色块恢复原状
+                    if (!pixel.classList.contains('active')) {
+                        pixel.style.transform = '';
+                        pixel.style.boxShadow = '';
+                        pixel.style.zIndex = '1';
+                    }
+                }
+            });
+        }
+        
+        // 显示隐藏文案
+        function showHiddenMessage() {
+            hiddenMessage.style.opacity = '1';
+        }
+        
+        // 褪色效果
+        function startFadeEffect() {
+            isFaded = true;
+            body.classList.add('faded');
+            mainContainer.style.opacity = '0.3';
+            
+            pixels.forEach((pixel) => {
+                const x = parseInt(pixel.dataset.x);
+                const y = parseInt(pixel.dataset.y);
+                const distance = Math.abs(x - 19) + Math.abs(y - 4);
+                
+                setTimeout(() => {
+                    pixel.style.background = `hsl(0, 0%, ${90 - distance * 2}%)`;
+                    pixel.style.boxShadow = '0 5px 15px rgba(0,0,0,0.2)';
+                    pixel.style.pointerEvents = 'none';
+                }, distance * 50);
+            });
+        }
+        
+        // 恢复所有色块
+        function restoreAllPixels() {
+            pixels.forEach((pixel, index) => {
+                pixel.style.background = originalColors[index];
+                pixel.style.boxShadow = '0 6px 15px rgba(0, 0, 0, 0.4)';
+                pixel.style.pointerEvents = 'auto';
+                pixel.classList.remove('active');
+                pixel.style.transform = '';
+                pixel.style.zIndex = '1';
+            });
+            
+            isFaded = false;
+            body.classList.remove('faded');
+            mainContainer.style.opacity = '1';
+            hiddenMessage.style.opacity = '0';
+        }
+    </script>
+</body>
+</html>
